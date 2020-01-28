@@ -1,4 +1,4 @@
-# PoC Cisco DNA-C Scripts
+# Cisco DNA-C Scripts
 Simple scripts for Cisco DNA-Center written in Python that show how to utilize APIs and automize / customize several tasks such as Plug and Play (PnP) or Software Image Upgrade (SWIM).
 
 ## Table of Contents

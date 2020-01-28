@@ -99,4 +99,22 @@ WS-C3650-12X48FD-E
 FDO2036V07E
 ```
 
-### 
+### image_upgrade.py
+
+Use Case:
+Our customers liked the Software Image Management (SWIM) method to automatically upgrade the IOS XE software on switches. They wanted to know whether this could be done via a script as well, because a script could be enhanced by several tests that are run after the image upgrade to verify that the switch is in a valid state. This is similar to the post-tests Cisco DNA-Center automatically performs (e.g. Spanning-Tree oder CDP Neighbor) after an upgrade, but customized to different tests (which are not part of this script).
+
+This script receives the hostname of a switch and an image name as input. It then instructs Cisco DNA-Center to distribute and install the image to the switch. The image needs to be already present on Cisco DNA-Center. Furthermore, the switch needs to reload after the image is installed.
+
+Note: In case that a domain name is used for the site where the switch is located, this domain name is part of the switches name.
+
+Example Usage:
+```
+python3 image_upgrade.py --switch=C9300-Lab.example.net --ios=cat9k_iosxe_npe.17.01.01.SPA.bin
+Specified Image found
+Specified Switch found
+Distributing Image to Switch, Response:
+{'response': {'taskId': 'e5ffae84-7e4d-4f00-a70b-e77d19e4d611', 'url': '/api/v1/task/e5ffae84-7e4d-4f00-a70b-e77d19e4d611'}, 'version': '1.0'}
+Installing Image to Switch, Response:
+{'response': {'taskId': '4f796632-2704-454e-8c41-41d48c3f551c', 'url': '/api/v1/task/4f796632-2704-454e-8c41-41d48c3f551c'}, 'version': '1.0'}
+```

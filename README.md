@@ -74,7 +74,8 @@ Use Case:
 Our customer asked if it was possible via Cisco DNA-Center to get the percantal value of shutdown interfaces for a specific site. This script receives the site (that is already known to Cisco DNA-Center) as input and outputs the total amount of interfaces, the shutdown interfaces and the percental value of the shutdown interfaces. Furthermore, it prints the hostnames and the reachability status of all switches since a switch that is not reachable is treated as a switch on which all ports are shutdown.
 
 Example Usage:
-```python3 compute_interfaces_percentage.py --site=Dusseldorf
+```
+python3 compute_interfaces_percentage.py --site=Dusseldorf
 Switches found in Dusseldorf:
 
 Switch: C9300-Lab
@@ -92,7 +93,8 @@ Use Case:
 Our customer was interested in receiving the serial numbers of all devices of the inventory with a single click. This script simply polls all devices from Cisco DNA-Center and prints hostname, platform, management IP and serial number.
 
 Example Usage: 
-```python3 get_devices_and_print_info.py
+```
+python3 get_devices_and_print_info.py
 C3650-Lab
 WS-C3650-12X48FD-E
 10.0.0.100

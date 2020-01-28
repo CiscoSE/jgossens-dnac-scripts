@@ -17,6 +17,7 @@ or implied.
 '''
 
 #Standard library imports.
+import argparse
 import json
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
@@ -37,12 +38,18 @@ dnac = api.DNACenterAPI(username=c.DNAC_FRA2_USERNAME,
                         version=c.DNAC_FRA2_VERSION,
                         verify=False)
 
+# Parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--site', default='')
+parser.add_argument('--tmpl', default='')
+parser.add_argument('--var', default='')
+args = parser.parse_args()
+
 # Variables
-# This script finds all switches that are in Dusseldorf and applies the IP SLA 2200
-# For the source IP we use the IP address of the Loopback10 interface
-site_name = 'Dusseldorf'
-src_int = 'Loopback10'
-tmpl_name = 'Apply_IP_SLA_2200'
+site_name = args.site
+site_name = args.site
+src_int = args.var
+tmpl_name = args.tmpl
 
 # Find the template and extract the unique template ID for later usage
 templates = dnac.template_programmer.gets_the_templates_available()
@@ -70,7 +77,6 @@ for m in members.device:
         hostname = device.hostname
         
         print('\nSwitch: ' + device.hostname)
-        print('Device ID: ' + device.instanceUuid)
         
         try:
             # Get the IP address of the correct interface so that we can feed this information to the IP SLA template
@@ -81,7 +87,7 @@ for m in members.device:
 
             # Create the JSON data that we need to send via http POST to Cisco DNA Center
             # Documentation of the dnacentersdk describes how this has to look like
-            data = {'targetInfo' : [{'hostName' : hostname, 'id' : device_id, 'params': {'source-ip': src_ip},'type' : 'MANAGED_DEVICE_UUID'}], 'templateId' : tmpl_id}
+            data = {'forcePushTemplate' : True, 'targetInfo' : [{'hostName' : hostname, 'id' : device_id, 'params': {'source-ip': src_ip},'type' : 'MANAGED_DEVICE_UUID'}], 'templateId' : tmpl_id}
             payload = json.dumps(data)
    
             # API Call to Cisco DNA Center to apply the template to the switch
@@ -89,12 +95,3 @@ for m in members.device:
             response = dnac.custom_caller.call_api('POST', url_tmpl, data=payload)
         except:
             print('Something went wrong - does the switch have a Loopback 10 interface?')
-
-'''
-This will be pushed:
-ip sla 2200
-    icmp-echo 8.8.8.8 source-ip [VARIABLER_PART]]
-    owner *** icmp test to internet***
-    frequency 10
-ip sla schedule 2200 life forever start-time now
-'''

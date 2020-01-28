@@ -24,6 +24,7 @@ from os import environ
 import requests
 import json
 import os
+import argparse
 import re
 import time
 import urllib3
@@ -40,6 +41,14 @@ import constants as c
 # Disable 'Insecure Connection' warning for DNA-C
 urllib3.disable_warnings(InsecureRequestWarning)
 
+# Parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--site', default='')
+args = parser.parse_args()
+
+# Variables
+site_name = args.site
+
 dnac = api.DNACenterAPI(username=c.DNAC_FRA2_USERNAME,
                         password=c.DNAC_FRA2_PASSWORD,
                         base_url=c.DNAC_FRA2_URL,
@@ -47,16 +56,12 @@ dnac = api.DNACenterAPI(username=c.DNAC_FRA2_USERNAME,
                         verify=False)
 
 
-# Variables
-site_name = 'Dusseldorf'
-
 # Find the site and extract the unique site id for later usage
 sites = dnac.sites.get_site()
 for s in sites.response:
     if(s.name == site_name):
         site = s
 site_id = site.id
-print(site_id)
 
 # The membership API takes a location and returns a big JSON file of all sub-locations and devices that are member of this location
 url = '/dna/intent/api/v1/membership/' + site_id
@@ -75,11 +80,7 @@ for m in members.device:
         int_count = device.interfaceCount
 
         print('\nSwitch: ' + hostname)
-        #print('Device ID: ' + device_id)
         print('Status: ' + status)
-        #print('Interfaces: ' + str(int_count))
-        
-        
 
         count = 0
         url_int = 'dna/intent/api/v1/interface/network-device/{}'.format(device_id)

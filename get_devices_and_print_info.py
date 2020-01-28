@@ -44,6 +44,5 @@ for device in devices.response:
     print(device.platformId)
     print(device.managementIpAddress)
     print(device.serialNumber)
-
     print()
 

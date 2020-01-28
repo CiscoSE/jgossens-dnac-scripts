@@ -17,6 +17,7 @@ or implied.
 '''
 
 #Standard library imports.
+import argparse
 import requests
 import json
 import urllib3
@@ -38,18 +39,22 @@ dnac = api.DNACenterAPI(username=c.DNAC_FRA2_USERNAME,
                         verify=False)
 
 
-# Variables to use, IOS version specified here will be installed on the switch with the hostname specified here
-switch = 'C3650-Telekom.fra-lab.net'
-ios = '16.9.3a'
+# Parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--ios', default='')
+parser.add_argument('--switch', default='')
+args = parser.parse_args()
+
+# Variables
+switch = args.switch #'C3650-Telekom.fra-lab.net'
+ios = args.ios #'16.9.3a'
     
 # Use IOS version 16.9.3, find the image in DNA-C and store the image id for later usage
 id_img = None
 url_img = 'dna/intent/api/v1/image/importation'
 images = dnac.custom_caller.call_api('GET', url_img)
-print('Images found in Cisco DNA-Center:')
 for i in images.response:
-    print(i.version)
-    if(i.version == ios):
+    if(i.name == ios):
         id_img = i.imageUuid
         print('Specified Image found')
 
@@ -63,21 +68,21 @@ for d in devices.response:
 
     if(d.hostname == switch):
         id_dev = d.id
-        print('Switch found')
+        print('Specified Switch found')
 
 # Distribute the specified IOS image from DNA-Center to the specified switch
 url_dist = 'dna/intent/api/v1/image/distribution'
 data = [{'deviceUuid' : id_dev, 'imageUuid' : id_img}]
 payload_dist = json.dumps(data)
-print(payload_dist)
 dist = dnac.custom_caller.call_api('POST', url_dist, data=payload_dist)
+print('Distributing Image to Switch, Response:')
 print(dist)
 
 # Install the image on the switch
 url_act = 'dna/intent/api/v1/image/activation/device'
 data = [{'deviceUuid' : id_dev, 'imageUuidList' : [id_img]}]
 payload_act = json.dumps(data)
-print(payload_act)
+print('Installing Image to Switch, Response:')
 act = dnac.custom_caller.call_api('POST', url_act, data=payload_act)
 print(act)
    
